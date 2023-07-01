@@ -90,12 +90,13 @@ next() {
 		ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
 		hwclock --systohc
 		echo "arch" > /etc/hostname
-		cat <<EOF > /etc/hosts
+		cat <<-EOF > /etc/hosts
 		127.0.0.1	localhost
 		::1			localhost
 		127.0.1.1	arch.localdomain	arch
 		EOF
 
+  		pacman -Sc --noconfirm
 		user
 }
 
@@ -120,6 +121,7 @@ user() {
 
 
 install_packages() {
+		pacman -Sc --noconfirm
 		sudo pacman -Syu
 		cat ~/dotfiles/backup/pacman.bak | xargs sudo pacman -S --noconfirm --needed 2> ~/packages.log
 
@@ -165,3 +167,5 @@ main () {
 		install &
 
 }
+
+main 2>&1 | tee output.log
