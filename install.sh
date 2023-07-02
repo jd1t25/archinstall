@@ -1,30 +1,11 @@
 #!/bin/bash
 
-# Spinner
-
-spinner() {
-	i=1
-	sp="/-\|"
-	echo -n ' '
-	while true
-	do
-	    printf "\b${sp:i++%${#sp}:1}  $1"
-	done
-}
-
-link () {
-	$1 >> output.log 2>&1 &
- 	while $1 
-  	do 
-   		spinner $2
-     	done
-}
-
 
 #Pre-requesite
 
 pre() {
 
+		touch logs
 		echo -e "\nPlease enter BOOT/EFI paritition: (example /dev/sda1 or /dev/nvme0n1p1)"
 		read EFI
 
@@ -80,7 +61,7 @@ install() {
 		genfstab -U /mnt >> /mnt/etc/fstab
 
 		# Grub
-		#grub
+		grub
 
 }
 
@@ -91,7 +72,7 @@ grub() {
 		grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 		grub-mkconfig -o /boot/grub/grub.cfg
 
-		#next
+		next
 }
 
 
@@ -125,7 +106,6 @@ next() {
 		echo $PASSWORD | sudo su - $USER
 		END
   
-  		post
 }
 
 post() {
@@ -167,14 +147,9 @@ main () {
 		fi
 
 		# shloka &
-		link install "Installing Linux"
-  		link grub "Installing Grub"
-    		link next "Configuring System"
-      		link post "Installing User Configs and Packages"
-  		
+		install 
 
 }
 
-main
-#main 2>&1 | tee output.log
-#main >> output.log 2>&1 
+
+main 2>&1 | tee output.log
