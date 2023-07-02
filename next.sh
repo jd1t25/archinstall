@@ -1,7 +1,5 @@
 user() {
 
-		
-
 		arch-chroot /mnt su $USER <<-END
 		pacman -S xorg pulseaudio stow git --noconfirm --needed
 		systemctl enable NetworkManager bluetooth
@@ -26,7 +24,7 @@ user() {
 		
 		# Restore foreign packages
 		cat ~/dotfiles/backup/yay.bak | xargs yay -S --needed --noconfirm 2> yay.log
-    END
+		END
 }
 
 user 2>&1 | tee user.log
