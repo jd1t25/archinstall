@@ -29,4 +29,4 @@ user() {
     END
 }
 
-user
+user 2>&1 | tee user.log
