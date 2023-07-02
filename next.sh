@@ -1,7 +1,7 @@
 user() {
 
 		arch-chroot /mnt su $USER <<-END
-		pacman -S xorg pulseaudio stow git --noconfirm --needed
+		pacman -S xorg pulseaudio stow git go --noconfirm --needed
 		systemctl enable NetworkManager bluetooth
 
 		git clone https://github.com/jd1t25/dotfiles
