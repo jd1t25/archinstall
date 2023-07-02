@@ -100,8 +100,7 @@ next() {
     		mkdir  /home/$USER
 		chown $USER:$USER /home/$USER
 		echo $PASSWORD | sudo su - $USER
-    		END
-		user
+		END
 }
 		
 
