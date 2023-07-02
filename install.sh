@@ -66,7 +66,7 @@ install() {
 }
 
 grub() {
-		pacstap /mnt grub efibootmgr --noconfirm --needed
+		pacstrap /mnt grub efibootmgr --noconfirm --needed
 		mkdir /boot/efi
 		mount $EFI /boot/efi
 		grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
@@ -78,7 +78,7 @@ grub() {
 
 next() {
 		
-		arch-chroot /mnt
+		arch-chroot /mnt <<-END
 
 		useradd -m $USER
 		usermod -aG wheel,storage,power,audio $USER
@@ -97,6 +97,7 @@ next() {
 		EOF
 
   		pacman -Sc --noconfirm
+    		END
 		user
 }
 
@@ -106,6 +107,7 @@ user() {
 		chown $USER:$USER /home/$USER
 		echo $PASSWORD | sudo su - $USER
 
+		arch-chroot /mnt su $USER <<-END
 		pacman -S xorg pulseaudio stow git --noconfirm --needed
 		systemctl enable NetworkManager bluetooth
 
@@ -114,36 +116,23 @@ user() {
 		cd ~/dotfiles/config
 		stow --adopt -t ~/.config .config
 
-
-		install_packages
-}
-
-
-
-install_packages() {
 		pacman -Sc --noconfirm
 		sudo pacman -Syu
 		cat ~/dotfiles/backup/pacman.bak | xargs sudo pacman -S --noconfirm --needed 2> ~/packages.log
 
-		yay
-}
 
-yay() {
-  # Install yay
-  sudo pacman -S --needed base-devel --noconfirm
-  git clone https://aur.archlinux.org/yay.git
-  cd yay
-  makepkg -si
-  cd ..
-  rm -rf yay
-
-	foreign_packages
-}
-
-foreign_packages () {
-  # Restore foreign packages
-  cat ~/dotfiles/backup/yay.bak | xargs yay -S --needed --noconfirm 2> yay.log
-}
+		# Install yay
+		sudo pacman -S --needed base-devel --noconfirm
+		git clone https://aur.archlinux.org/yay.git
+		cd yay
+		makepkg -si
+		cd ..
+		rm -rf yay
+		
+		# Restore foreign packages
+		cat ~/dotfiles/backup/yay.bak | xargs yay -S --needed --noconfirm 2> yay.log
+  }
+		
 
 #shloka
 shloka () {
@@ -167,5 +156,6 @@ main () {
 		install &
 
 }
+
 
 main 2>&1 | tee output.log
