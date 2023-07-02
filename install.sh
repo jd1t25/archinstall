@@ -55,7 +55,7 @@ install() {
 		pacstrap /mnt base base-devel --noconfirm --needed
 
 		# kernel
-		pacstrap /mnt sudo vim linux linux-firmware linux-headers --noconfirm --needed
+		pacstrap /mnt sudo vim linux linux-firmware linux-headers networkmanager --noconfirm --needed
 
 		# fstab
 		genfstab -U /mnt >> /mnt/etc/fstab
@@ -84,6 +84,7 @@ next() {
 		usermod -aG wheel,storage,power,audio $USER
 		echo $USER:$PASSWORD | chpasswd
 		sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+  		echo "Defaults passwd_timeout=120" >> /etc/sudoers
 		sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 		locale-gen
 		echo "LANG=en_US.UTF-8" >> /etc/locale.conf
@@ -97,6 +98,9 @@ next() {
 		EOF
 
   		pacman -Sc --noconfirm
+    
+    		systemctl enable NetworkManager
+      
     		mkdir  /home/$USER
 		chown $USER:$USER /home/$USER
 		echo $PASSWORD | sudo su - $USER
